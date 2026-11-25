@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b2f6b">
+  <link rel="icon" href="favicon.png">
+  <meta name="robots" content="noindex">
+  <title>Loksewa Exam Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<section id="login" class="login-wrap">
+  <div class="card">
+    <img class="logo" src="logo.png" alt="Loksewa – Team Sandesh">
+    <h2 style="text-align:center">Exam admin</h2>
+    <p class="sub">Enter the admin password set in config.php on your server.</p>
+    <form id="login-form">
+      <label for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <div id="login-msg" class="msg err hidden"></div>
+      <button class="btn primary block" type="submit" style="margin-top:16px">Sign in</button>
+    </form>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+<header class="admin-top"><div class="inner">
+  <img class="topbar-logo" src="logo-mark.png" alt="" style="height:34px;background:#fff;border-radius:8px;padding:4px 6px">
+  <h1>Loksewa <span>Competition</span> · Admin</h1><span class="spacer"></span><button class="btn small" id="logout">Sign out</button>
+</div></header>
+<section class="wrap wide">
+  <div class="tabs">
+    <button class="tab active" data-tab="results">Results</button>
+    <button class="tab" data-tab="questions">Questions</button>
+    <button class="tab" data-tab="upload">Upload questions</button>
+    <button class="tab" data-tab="pictures">Pictures</button>
+  </div>
+
+  <div data-panel="results">
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn small" id="refresh">Refresh</button>
+      <button class="btn small" id="csv">Download results (CSV)</button>
+      <button class="btn small" id="csv-detail">Download every answer (CSV)</button>
+      <span class="spacer"></span><span class="sub" style="margin:0" id="summary"></span>
+    </div>
+    <p class="sub">Ranked by score, then by shortest total time. Times are Nepal time.</p>
+    <div class="tablewrap"><table class="data" id="results"><thead><tr>
+      <th>Rank</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Score</th><th>IQ</th><th>GK</th><th>Answered</th>
+      <th>Start</th><th>Finish</th><th>Total time</th><th>Submitted by</th><th>Left page</th><th>Copy tries</th><th>Screenshot keys</th><th>Questions removed</th><th></th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+
+  <div data-panel="questions" class="hidden">
+    <div class="toolbar">
+      <button class="btn primary" id="q-add" type="button">+ Add a question</button>
+      <input id="q-search" type="search" placeholder="Search questions…">
+      <select id="q-filter"><option value="">All sections</option><option value="IQ">IQ only</option><option value="GK">GK only</option><option value="match">Match the following</option><option value="hidden">Hidden</option></select>
+    </div>
+    <p class="sub" id="qsummary"></p>
+    <div id="qlist" class="qgrid"></div>
+  </div>
+
+  <div data-panel="upload" class="hidden">
+    <div class="card" style="margin-bottom:16px">
+      <h2>1. Upload an Excel or CSV file</h2>
+      <p class="sub">Download the template, fill one question per row, save, and upload it here. You will see a preview before anything is saved.</p>
+      <div class="row" style="margin-bottom:12px"><a class="btn small" href="question-template.xlsx" download>Download Excel template</a></div>
+      <label class="dropzone" id="drop"><input type="file" id="qfile" accept=".xlsx,.xls,.csv,.ods" hidden>
+        <b>Choose a file</b> or drop it here<br><span class="hint">.xlsx, .xls or .csv</span></label>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h2>2. Or type / paste questions</h2>
+      <p class="sub">Type questions in the box (or copy them from Word) in this simple format, then press Check.</p>
+      <div class="grid2">
+        <div>
+          <textarea id="qtext" rows="18" spellcheck="false" placeholder="[IQ]&#10;1. What number comes next? 2, 6, 12, 20, ?&#10;A. 24&#10;B. 30&#10;C. 32&#10;D. 36&#10;Answer: B"></textarea>
+          <div class="row" style="margin-top:10px"><button class="btn small" id="text-example" type="button">Show example</button><button class="btn primary small" id="text-check" type="button">Check</button></div>
+        </div>
+        <div class="hint" style="margin:0">
+          <b>How to write it</b>
+          <ul class="rules" style="margin-top:6px">
+            <li><code>[IQ]</code> or <code>[GK]</code> on its own line starts that section.</li>
+            <li>Start each question with its number: <code>1.</code> or <code>Q1.</code></li>
+            <li>Options start with <code>A.</code> <code>B.</code> <code>C.</code> <code>D.</code> (or <code>a)</code>, <code>(a)</code>).</li>
+            <li>Then the correct letter: <code>Answer: C</code></li>
+            <li>Picture for the question: <code>Picture: q5.png</code> (upload it on the Pictures tab). An option can also be just a picture name, like <code>A. shape1.png</code></li>
+            <li>Match the following: write <code>List I:</code> then its items one per line, then <code>List II:</code> and its items, then the options like <code>A. A-2, B-1, C-4, D-3</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="card hidden" id="preview-card">
+      <h2 id="preview-title">Preview</h2>
+      <div id="preview-msg" class="msg hidden"></div>
+      <div class="row" style="margin:12px 0">
+        <select id="mode" style="width:auto">
+          <option value="append">Add to the existing questions</option>
+          <option value="replace">Replace all existing questions</option>
+        </select>
+        <button class="btn primary" id="do-import" type="button">Save these questions</button>
+      </div>
+      <div id="preview"></div>
+    </div>
+  </div>
+
+  <div data-panel="pictures" class="hidden">
+    <div class="card" style="margin-bottom:16px">
+      <h2>Pictures</h2>
+      <p class="sub">Upload pictures for questions or options (JPG, PNG, GIF, WEBP). Then use the file name, for example <code>q5.png</code>, in your Excel file, in the text format, or pick it in the question editor. Uploading a file with the same name replaces the old one.</p>
+      <label class="dropzone" id="pdrop"><input type="file" id="pfile" accept="image/*" multiple hidden><b>Choose pictures</b> or drop them here</label>
+      <div id="pmsg" class="msg hidden"></div>
+    </div>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+</section>
+</div>
+
+<div class="overlay hidden" id="editor">
+  <div class="modal big">
+    <div class="row"><h2 id="ed-title" style="margin:0">Question</h2><span class="spacer"></span><button class="btn small" id="ed-close" type="button">Close</button></div>
+    <div class="grid2">
+      <div><label for="ed-section">Section</label><select id="ed-section"><option value="IQ">IQ</option><option value="GK">General Knowledge (GK)</option></select></div>
+      <div><label for="ed-type">Question type</label><select id="ed-type"><option value="single">Normal (choose one answer)</option><option value="match">Match the following</option></select></div>
+    </div>
+    <label for="ed-text">Question</label>
+    <textarea id="ed-text" rows="4"></textarea>
+    <label for="ed-image">Question picture (optional)</label>
+    <div id="ed-image-field"></div>
+    <label for="ed-thead">Table (optional, for match the following or any table in the question)</label>
+    <input id="ed-thead" placeholder="Column headings, separated by |   e.g.  List I | List II">
+    <textarea id="ed-trows" rows="5" style="margin-top:8px" placeholder="One row per line, columns separated by |&#10;a. Mercury | 1. The Red Planet&#10;b. Jupiter | 2. The largest planet"></textarea>
+    <p class="hint">Leave both empty if the question has no table. A third column works too: <code>a. Project | 1. 60 MW | i. World Bank</code></p>
+    <label>Options (fill at least two; each can have text, a picture, or both). The green letter is the correct answer.</label>
+    <div id="ed-options"></div>
+    <div class="grid2">
+      <div><label for="ed-answer">Correct answer</label><select id="ed-answer"></select></div>
+      <div><label>&nbsp;</label><label class="check" style="margin:8px 0 0"><input type="checkbox" id="ed-active" checked> Show this question to students</label></div>
+    </div>
+    <div id="ed-msg" class="msg err hidden"></div>
+    <div class="row" style="margin-top:16px"><button class="btn danger" id="ed-delete" type="button">Delete question</button><span class="spacer"></span><button class="btn primary" id="ed-save" type="button">Save question</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="detail">
+  <div class="modal big">
+    <div class="row"><h2 id="detail-title" style="margin:0"></h2><span class="spacer"></span><button class="btn small" id="detail-close">Close</button></div>
+    <div class="tablewrap" style="margin-top:12px"><table class="data"><thead><tr>
+      <th>#</th><th>Section</th><th>Question</th><th>Chosen</th><th>Correct</th><th>Result</th><th>Time on question</th><th>Times opened</th>
+    </tr></thead><tbody id="detail-body"></tbody></table></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2f6b">
+  <title>Loksewa Competition Exam</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 1 + 2. Registration and rules share the branded layout -->
+<section id="view-register" class="auth hidden">
+  <div class="auth-brand">
+    <div class="logo-chip"><img src="logo.png" alt="Loksewa – Team Sandesh"></div>
+    <h1 class="js-title">Loksewa Student Competition</h1>
+    <p>Answer IQ and General Knowledge questions and win rewards from Team Sandesh.</p>
+    <ul class="facts" id="facts">
+      <li><b id="fact-q">50</b><span>questions</span></li>
+      <li><b id="fact-t">45</b><span>minutes</span></li>
+      <li><b>IQ + GK</b><span>sections</span></li>
+    </ul>
+    <p class="exam-time hidden" id="exam-time"></p>
+  </div>
+  <div class="auth-main">
+    <div class="card form-card">
+      <h2>Register for the exam</h2>
+      <p class="sub">Use correct details. Winners will be contacted on them.</p>
+      <div class="window-note hidden" id="win-note" role="status"></div>
+      <form id="reg-form" novalidate>
+        <label for="f-name">Full name</label>
+        <input id="f-name" name="name" autocomplete="name" maxlength="150" required>
+        <div class="grid2">
+          <div>
+            <label for="f-phone">Phone number</label>
+            <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="98XXXXXXXX" required>
+          </div>
+          <div>
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" maxlength="190" required>
+          </div>
+        </div>
+        <label for="f-address">Current address</label>
+        <textarea id="f-address" name="address" rows="2" maxlength="500" autocomplete="street-address" required></textarea>
+        <div id="reg-msg" class="msg err hidden"></div>
+        <button class="btn primary block" type="submit" style="margin-top:20px">Next</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="view-rules" class="auth hidden">
+  <div class="auth-brand">
+    <div class="logo-chip"><img src="logo.png" alt="Loksewa – Team Sandesh"></div>
+    <h1 class="js-title">Loksewa Student Competition</h1>
+    <p>Read the rules carefully. Breaking them removes the question you are on.</p>
+  </div>
+  <div class="auth-main">
+    <div class="card form-card">
+      <h2>Before you start</h2>
+      <ul class="rules" id="rules-list"><li>Loading the exam rules…</li></ul>
+      <label class="check"><input type="checkbox" id="agree"> I have read the rules and my details are correct.</label>
+      <div id="start-msg" class="msg err hidden"></div>
+      <div class="row" style="margin-top:20px">
+        <button class="btn" id="btn-back" type="button">Back</button>
+        <span class="spacer"></span>
+        <button class="btn primary" id="btn-start" type="button" disabled>Start exam</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Exam -->
+<section id="view-exam" class="hidden">
+  <header class="topbar"><div class="inner">
+    <img class="topbar-logo" src="logo-mark.png" alt="">
+    <div class="topbar-id">
+      <b>Loksewa Competition</b>
+      <span class="who" id="x-name"></span>
+    </div>
+    <span class="save-state" id="save-state"></span>
+    <div class="timer" id="timer" aria-live="off">45:00</div>
+  </div></header>
+  <div class="exam">
+    <main class="card qcard" id="qcard">
+      <div class="watermark hidden" id="watermark" aria-hidden="true"></div>
+      <div class="qmeta"><span class="badge" id="q-section">IQ</span><span id="q-pos">Question 1 of 50</span></div>
+      <div class="qtimer hidden" id="qtimer"><div class="qtimer-bar"><span id="qtimer-fill"></span></div><b id="qtimer-text">10s</b></div>
+      <div id="q-body">
+        <p class="qtext" id="q-text"></p>
+        <img class="qimg hidden" id="q-img" alt="Question picture">
+        <div class="match-wrap hidden" id="q-match-wrap"><table class="match" id="q-match"></table></div>
+        <div class="options" id="q-options" role="radiogroup"></div>
+      </div>
+      <div class="forfeit-note hidden" id="q-forfeit"></div>
+      <div class="navrow">
+        <button class="btn" id="btn-prev" type="button">‹ <span class="hide-sm">Previous</span></button>
+        <button class="btn" id="btn-clear" type="button">Clear</button>
+        <button class="btn" id="btn-review" type="button">Mark for review</button>
+        <span class="spacer"></span>
+        <button class="btn primary" id="btn-next" type="button">Next ›</button>
+      </div>
+    </main>
+    <aside class="card side">
+      <div class="row"><b>Questions</b><span class="spacer"></span><span id="answered-count" class="sub" style="margin:0"></span></div>
+      <div class="legend"><span class="l-ans">Answered</span><span class="l-rev">For review</span><span class="l-seen">Seen</span><span class="l-lost">Removed</span></div>
+      <div id="palette"></div>
+      <button class="btn accent block" id="btn-submit" type="button" style="margin-top:16px">Submit exam</button>
+    </aside>
+  </div>
+</section>
+
+<!-- 4. Done -->
+<section id="view-done" class="auth hidden">
+  <div class="auth-brand">
+    <div class="logo-chip"><img src="logo.png" alt="Loksewa – Team Sandesh"></div>
+    <h1>Thank you!</h1>
+    <p>Your exam has been submitted. Winners will be contacted by Team Sandesh.</p>
+  </div>
+  <div class="auth-main">
+    <div class="card form-card">
+      <h2>Well done, <span id="d-name"></span></h2>
+      <p class="sub" id="d-sub">Here is a summary of your exam.</p>
+      <div class="submit-stamp" id="d-stamp">
+        <small>Submission recorded</small>
+        <b id="d-time"></b>
+        <span id="d-date"></span>
+      </div>
+      <div class="stats" id="d-stats"></div>
+      <section class="criteria" aria-labelledby="crit-h">
+        <h3 id="crit-h">How winners are selected</h3>
+        <ol>
+          <li><b>Highest score</b><span>Students are ranked by the number of correct answers. Each correct answer earns 1 mark.</span></li>
+          <li><b>Earliest submission time</b><span>If two or more students have the same score, the one who submitted first ranks higher.</span></li>
+        </ol>
+        <p>Results are checked by Team Sandesh. Winners will be contacted on the phone number and email they registered with.</p>
+      </section>
+      <p class="sub" style="margin:16px 0 0">You can close this page now.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Loading -->
+<section id="view-loading" class="center-screen">
+  <img src="logo.png" alt="Loksewa – Team Sandesh" class="loading-logo">
+  <p class="sub" id="loading-text">Loading…</p>
+</section>
+
+<div class="overlay shield hidden" id="shield">
+  <div class="modal">
+    <h2 id="shield-title">Question removed</h2>
+    <p id="shield-text"></p>
+    <div class="row"><span class="spacer"></span><button class="btn primary" id="shield-back" type="button">Continue the exam</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="confirm">
+  <div class="modal">
+    <h2>Submit exam?</h2>
+    <p id="confirm-text"></p>
+    <div class="row"><span class="spacer"></span>
+      <button class="btn" id="confirm-no" type="button">Keep working</button>
+      <button class="btn accent" id="confirm-yes" type="button">Yes, submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="submitting">
+  <div class="modal">
+    <h2 id="sub-title">Submitting…</h2>
+    <p id="sub-text">Please wait and do not close this page.</p>
+    <div class="row hidden" id="sub-retry-row"><span class="spacer"></span><button class="btn primary" id="sub-retry" type="button">Try again</button></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
